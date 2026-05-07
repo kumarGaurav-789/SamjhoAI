@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SamjhoAI — 1092 Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════
+   DESIGN SYSTEM — Deep government-tech aesthetic
+   Inspired by command centers & mission control
+═══════════════════════════════════════════════ */
+:root {
+  --bg0:    #050c18;
+  --bg1:    #080f1e;
+  --bg2:    #0c1628;
+  --bg3:    #101d32;
+  --bg4:    #152240;
+  --panel:  rgba(12,22,40,0.95);
+
+  --teal:   #00e5b4;
+  --teal2:  #00c49a;
+  --teal3:  #007a60;
+  --blue:   #4da6ff;
+  --blue2:  #1a6bcc;
+  --amber:  #ffb340;
+  --amber2: #cc8800;
+  --red:    #ff4d6a;
+  --red2:   #cc1f3a;
+  --green:  #2df5a0;
+  --green2: #00c472;
+
+  --text0:  #f0f6ff;
+  --text1:  #b8cce0;
+  --text2:  #6a8aaa;
+  --text3:  #344d66;
+
+  --border0: rgba(0,229,180,0.15);
+  --border1: rgba(77,166,255,0.12);
+  --border2: rgba(255,255,255,0.06);
+
+  --f-display: 'Outfit', sans-serif;
+  --f-mono:    'JetBrains Mono', monospace;
+  --f-hindi:   'Noto Sans Devanagari', sans-serif;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+
+  --shadow-teal: 0 0 24px rgba(0,229,180,0.12);
+  --shadow-blue: 0 0 24px rgba(77,166,255,0.12);
+  --glow-teal:   0 0 8px rgba(0,229,180,0.6);
+  --glow-amber:  0 0 8px rgba(255,179,64,0.6);
+  --glow-red:    0 0 8px rgba(255,77,106,0.6);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { font-size: 14px; }
+
+body {
+  background: var(--bg0);
+  color: var(--text0);
+  font-family: var(--f-display);
+  height: 100vh;
+  overflow: hidden;
+  cursor: default;
+}
+
+/* Animated background grid */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,229,180,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,180,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: grid-drift 20s linear infinite;
+  pointer-events: none;
+}
+@keyframes grid-drift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(48px); }
+}
+
+/* Ambient glows */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 600px 400px at 15% 10%, rgba(0,229,180,0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 300px at 85% 90%, rgba(77,166,255,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 300px at 80% 10%, rgba(255,179,64,0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── ROOT LAYOUT ── */
+#root { position: relative; z-index: 1; height: 100vh; display: flex; flex-direction: column; }
+
+/* ══════════════════════════════════
+   TOPBAR
+══════════════════════════════════ */
+.topbar {
+  height: 52px;
+  background: rgba(5,12,24,0.98);
+  border-bottom: 1px solid var(--border0);
+  display: flex; align-items: center;
+  padding: 0 1.25rem; gap: 1rem;
+  flex-shrink: 0;
+  backdrop-filter: blur(20px);
+}
+
+.logo {
+  display: flex; align-items: center; gap: 9px;
+  font-weight: 900; font-size: 1.2rem; letter-spacing: -0.03em;
+  flex-shrink: 0;
+}
+.logo-mark {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; position: relative; overflow: hidden;
+}
+.logo-mark::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+}
+.logo-text { color: var(--text0); }
+.logo-text span { color: var(--teal); }
+
+.topbar-sep { width: 1px; height: 28px; background: var(--border2); }
+
+.topbar-status {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.7rem; font-family: var(--f-mono);
+  color: var(--text2); letter-spacing: 0.08em;
+}
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: var(--glow-teal);
+  animation: pulse-status 2s infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse-status {
+  0%,100%{ opacity:1; transform:scale(1); }
+  50%{ opacity:0.6; transform:scale(0.8); }
+}
+
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+.topbar-chip {
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 0.62rem; font-family: var(--f-mono);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  border: 1px solid; cursor: default;
+}
+.chip-teal { color: var(--teal); border-color: var(--teal3); background: rgba(0,229,180,0.06); }
+.chip-blue { color: var(--blue); border-color: var(--blue2); background: rgba(77,166,255,0.06); }
+.chip-amber { color: var(--amber); border-color: var(--amber2); background: rgba(255,179,64,0.06); }
+
+.api-zone { display: flex; align-items: center; gap: 6px; }
+.api-input {
+  width: 200px; background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 6px; padding: 4px 10px;
+  color: var(--text1); font-family: var(--f-mono); font-size: 0.68rem;
+  outline: none; transition: border-color 0.2s;
+}
+.api-input:focus { border-color: var(--teal3); }
+.api-input::placeholder { color: var(--text3); }
+.btn-api {
+  background: var(--teal3); color: var(--text0);
+  border: none; border-radius: 5px; padding: 4px 10px;
+  font-size: 0.65rem; font-family: var(--f-display); font-weight: 700;
+  cursor: pointer; letter-spacing: 0.05em;
+  transition: background 0.2s;
+}
+.btn-api:hover { background: var(--teal2); }
+.api-active-badge {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.65rem; font-family: var(--f-mono); color: var(--green);
+  cursor: pointer;
+}
+
+/* ══════════════════════════════════
+   MAIN CONTENT AREA
+══════════════════════════════════ */
+.workspace {
+  flex: 1; display: grid;
+  grid-template-columns: 220px 1fr 340px;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ══════════════════════════════════
+   LEFT SIDEBAR — SCENARIOS & LOG
+══════════════════════════════════ */
+.sidebar {
+  background: rgba(8,15,30,0.97);
+  border-right: 1px solid var(--border2);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-section { flex-shrink: 0; }
+.sidebar-header {
+  padding: 10px 14px 8px;
+  font-size: 0.6rem; font-family: var(--f-mono);
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text3); border-bottom: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sidebar-count {
+  background: var(--bg4); color: var(--teal);
+  padding: 1px 6px; border-radius: 10px;
+  font-size: 0.58rem;
+}
+
+/* scenario cards */
+.scenario-list { padding: 8px; display: flex; flex-direction: column; gap: 5px; }
+.scenario-card {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: var(--r-md); padding: 8px 10px;
+  cursor: pointer; transition: all 0.18s;
+  position: relative; overflow: hidden;
+}
+.scenario-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2px; background: transparent;
+  transition: background 0.18s;
+}
+.scenario-card:hover { border-color: var(--border0); background: var(--bg3); }
+.scenario-card:hover::before { background: var(--teal); }
+.scenario-card.active { border-color: var(--teal3); background: rgba(0,229,180,0.05); }
+.scenario-card.active::before { background: var(--teal); }
+
+.sc-lang {
+  font-size: 0.58rem; font-family: var(--f-mono);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--teal); margin-bottom: 3px;
+}
+.sc-name { font-size: 0.8rem; font-weight: 600; color: var(--text0); line-height: 1.2; }
+.sc-issue { font-size: 0.7rem; color: var(--text2); margin-top: 2px; }
+.sc-sent {
+  font-size: 0.6rem; margin-top: 5px;
+  display: flex; align-items: center; gap: 4px;
+}
+
+/* call log */
+.call-log { flex: 1; overflow-y: auto; }
+.call-log::-webkit-scrollbar { width: 3px; }
+.call-log::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+.log-item {
+  padding: 8px 14px; border-bottom: 1px solid var(--border2);
+  cursor: pointer; transition: background 0.15s;
+}
+.log-item:hover { background: var(--bg2); }
+.log-item-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+.log-id { font-family: var(--f-mono); font-size: 0.58rem; color: var(--text3); }
+.log-time { font-family: var(--f-mono); font-size: 0.58rem; color: var(--text3); }
+.log-caller { font-size: 0.75rem; font-weight: 600; color: var(--text1); }
+.log-issue-text { font-size: 0.68rem; color: var(--text2); margin-top: 1px; }
+.log-tags { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+.log-tag {
+  font-size: 0.55rem; font-family: var(--f-mono); padding: 1px 5px;
+  border-radius: 3px; text-transform: uppercase; letter-spacing: 0.06em;
+}
+.lt-green { background: rgba(45,245,160,0.1); color: var(--green); }
+.lt-amber { background: rgba(255,179,64,0.1); color: var(--amber); }
+.lt-red   { background: rgba(255,77,106,0.12); color: var(--red); }
+.lt-blue  { background: rgba(77,166,255,0.1); color: var(--blue); }
+.lt-gray  { background: rgba(106,138,170,0.1); color: var(--text2); }
+
+/* ══════════════════════════════════
+   CENTER — CALL FEED
+══════════════════════════════════ */
+.call-center {
+  display: flex; flex-direction: column;
+  border-right: 1px solid var(--border2);
+  background: var(--bg1); overflow: hidden;
+}
+
+/* call header bar */
+.call-header {
+  height: 56px; flex-shrink: 0;
+  background: rgba(8,15,30,0.9);
+  border-bottom: 1px solid var(--border2);
+  display: flex; align-items: center;
+  padding: 0 1.25rem; gap: 1rem;
+  backdrop-filter: blur(12px);
+}
+
+.caller-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--bg3), var(--bg4));
+  border: 1.5px solid var(--teal3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0; position: relative;
+}
+.caller-avatar.active::after {
+  content: ''; position: absolute; inset: -3px;
+  border-radius: 50%; border: 1.5px solid var(--teal);
+  animation: caller-ring 2s ease infinite;
+}
+@keyframes caller-ring {
+  0%   { opacity: 0.8; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+.caller-info { flex: 1; }
+.caller-name-row { display: flex; align-items: center; gap: 8px; }
+.caller-name { font-size: 0.9rem; font-weight: 700; color: var(--text0); }
+.caller-lang-tag {
+  font-size: 0.58rem; font-family: var(--f-mono); padding: 1px 6px;
+  border-radius: 4px; background: rgba(77,166,255,0.1);
+  color: var(--blue); border: 1px solid rgba(77,166,255,0.25);
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+.caller-sub { font-size: 0.68rem; color: var(--text2); margin-top: 1px; }
+
+.call-controls { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.timer {
+  font-family: var(--f-mono); font-size: 0.8rem; color: var(--teal);
+  background: rgba(0,229,180,0.06); border: 1px solid var(--teal3);
+  padding: 3px 10px; border-radius: 5px; letter-spacing: 0.05em;
+}
+.timer.pulse { animation: timer-pulse 1s infinite; }
+@keyframes timer-pulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
+
+.btn-ctrl {
+  border: 1px solid; border-radius: var(--r-sm);
+  font-family: var(--f-display); font-size: 0.72rem; font-weight: 700;
+  padding: 5px 12px; cursor: pointer; transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+.btn-end { color: var(--red); border-color: rgba(255,77,106,0.35); background: rgba(255,77,106,0.06); }
+.btn-end:hover { background: rgba(255,77,106,0.15); }
+.btn-new { color: var(--teal); border-color: var(--teal3); background: rgba(0,229,180,0.06); }
+.btn-new:hover { background: rgba(0,229,180,0.12); }
+.btn-new:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* waveform visualizer */
+.waveform {
+  height: 32px; flex-shrink: 0;
+  background: rgba(5,12,24,0.8);
+  border-bottom: 1px solid var(--border2);
+  display: flex; align-items: center;
+  padding: 0 1rem; gap: 2px; overflow: hidden;
+}
+.wave-bar {
+  width: 3px; border-radius: 2px;
+  background: var(--teal3);
+  transition: height 0.1s;
+}
+.wave-bar.active { background: var(--teal); }
+.waveform-label {
+  margin-left: auto; font-size: 0.6rem; font-family: var(--f-mono);
+  color: var(--text3); letter-spacing: 0.1em;
+  display: flex; align-items: center; gap: 5px;
+}
+
+/* transcript feed */
+.transcript-feed {
+  flex: 1; overflow-y: auto; padding: 1rem;
+  display: flex; flex-direction: column; gap: 0.875rem;
+  scroll-behavior: smooth;
+}
+.transcript-feed::-webkit-scrollbar { width: 4px; }
+.transcript-feed::-webkit-scrollbar-track { background: transparent; }
+.transcript-feed::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+/* empty state */
+.empty-feed {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; opacity: 0.4; padding: 2rem;
+}
+.empty-icon { font-size: 3rem; }
+.empty-label { font-size: 0.82rem; color: var(--text2); text-align: center; line-height: 1.6; }
+.empty-hint {
+  font-size: 0.68rem; font-family: var(--f-mono); color: var(--text3);
+  text-align: center; letter-spacing: 0.06em;
+}
+
+/* message bubbles */
+.msg-row { display: flex; gap: 8px; animation: msg-in 0.25s cubic-bezier(.34,1.56,.64,1); }
+@keyframes msg-in {
+  from { opacity:0; transform:translateY(10px) scale(0.97); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.msg-row.agent { flex-direction: row-reverse; }
+
+.msg-avatar-sm {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0; margin-top: 4px;
+}
+.avatar-citizen { background: var(--bg4); border: 1px solid rgba(77,166,255,0.3); }
+.avatar-agent   { background: var(--bg4); border: 1px solid var(--teal3); }
+.avatar-system  { background: rgba(255,179,64,0.08); border: 1px solid rgba(255,179,64,0.2); }
+
+.msg-body { max-width: 68%; }
+
+.bubble {
+  padding: 0.65rem 0.9rem; border-radius: 12px; line-height: 1.55;
+}
+.bubble-citizen {
+  background: var(--bg3); border: 1px solid var(--border1);
+  border-radius: 4px 12px 12px 12px; font-size: 0.85rem; color: var(--text0);
+}
+.bubble-agent {
+  background: rgba(0,229,180,0.07); border: 1px solid var(--border0);
+  border-radius: 12px 4px 12px 12px; font-size: 0.85rem; color: var(--text0);
+}
+.bubble-system {
+  background: rgba(255,179,64,0.06); border: 1px solid rgba(255,179,64,0.2);
+  border-radius: 8px; font-size: 0.78rem; color: var(--amber);
+  font-style: italic;
+}
+
+.bubble-hindi { font-family: var(--f-hindi); font-size: 0.9rem; color: #7eb8ff; margin-top: 4px; }
+.bubble-tr    { font-size: 0.72rem; color: var(--text2); margin-top: 4px; font-style: italic; }
+.msg-meta     { font-size: 0.6rem; color: var(--text3); margin-top: 3px; font-family: var(--f-mono); }
+.msg-row.agent .msg-meta { text-align: right; }
+
+/* typing indicator */
+.typing-row { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+.typing-dots { display: flex; gap: 4px; }
+.typing-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--teal); animation: tdot 1.2s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay:.15s; }
+.typing-dot:nth-child(3) { animation-delay:.3s; }
+@keyframes tdot { 0%,80%,100%{opacity:0.3;transform:scale(0.7)} 40%{opacity:1;transform:scale(1)} }
+.typing-label { font-size: 0.7rem; color: var(--text2); font-family: var(--f-mono); }
+
+/* input area */
+.input-zone {
+  flex-shrink: 0; padding: 0.875rem 1rem;
+  background: rgba(8,15,30,0.95);
+  border-top: 1px solid var(--border2);
+  backdrop-filter: blur(12px);
+}
+.input-inner { display: flex; gap: 8px; align-items: flex-end; }
+.input-ta {
+  flex: 1; background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: var(--r-md); padding: 9px 12px;
+  color: var(--text0); font-family: var(--f-display); font-size: 0.85rem;
+  resize: none; outline: none; transition: border-color 0.2s; min-height: 42px;
+  line-height: 1.4;
+}
+.input-ta:focus { border-color: var(--teal3); }
+.input-ta::placeholder { color: var(--text3); }
+
+.btn-send {
+  background: var(--teal); color: var(--bg0); border: none;
+  border-radius: var(--r-md); padding: 9px 16px;
+  font-family: var(--f-display); font-size: 0.8rem; font-weight: 800;
+  cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em;
+  height: 42px; flex-shrink: 0;
+}
+.btn-send:hover { background: var(--teal2); transform: translateY(-1px); box-shadow: var(--shadow-teal); }
+.btn-send:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-mic {
+  width: 42px; height: 42px; border-radius: var(--r-md);
+  background: var(--bg3); border: 1px solid var(--border2);
+  color: var(--text1); font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.btn-mic:hover { border-color: var(--teal3); color: var(--teal); }
+.btn-mic.listening {
+  background: rgba(255,77,106,0.1); border-color: var(--red);
+  color: var(--red); box-shadow: var(--glow-red);
+  animation: mic-pulse 0.9s infinite;
+}
+@keyframes mic-pulse { 0%,100%{box-shadow:var(--glow-red)} 50%{box-shadow:0 0 16px rgba(255,77,106,0.8)} }
+
+.input-hint { font-size: 0.6rem; color: var(--text3); font-family: var(--f-mono); margin-top: 5px; text-align: right; letter-spacing: 0.06em; }
+
+/* ══════════════════════════════════
+   RIGHT — COPILOT PANEL
+══════════════════════════════════ */
+.copilot {
+  background: rgba(8,15,30,0.98);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+
+.copilot-header {
+  height: 56px; flex-shrink: 0;
+  border-bottom: 1px solid var(--border0);
+  display: flex; align-items: center; padding: 0 1rem; gap: 8px;
+  background: rgba(0,229,180,0.03);
+}
+.copilot-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; color: var(--teal); flex: 1; }
+.copilot-icon { font-size: 1.1rem; }
+.copilot-badge {
+  font-size: 0.58rem; font-family: var(--f-mono); padding: 2px 8px;
+  border-radius: 10px; background: rgba(0,229,180,0.1);
+  color: var(--teal); border: 1px solid var(--teal3);
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+
+.copilot-scroll {
+  flex: 1; overflow-y: auto; padding: 0.75rem;
+  display: flex; flex-direction: column; gap: 0.625rem;
+}
+.copilot-scroll::-webkit-scrollbar { width: 3px; }
+.copilot-scroll::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+/* ── COPILOT CARDS ── */
+.ccard {
+  border-radius: var(--r-lg); border: 1px solid;
+  overflow: hidden; animation: ccard-in 0.3s ease;
+}
+@keyframes ccard-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+.ccard-header {
+  padding: 8px 12px; display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ccard-label {
+  font-size: 0.58rem; font-family: var(--f-mono);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  flex: 1;
+}
+.ccard-body { padding: 10px 12px; }
+
+/* SENTIMENT CARD */
+.ccard-sentiment { background: var(--bg2); }
+.ccard-sentiment-calm      { border-color: rgba(45,245,160,0.25); }
+.ccard-sentiment-confused  { border-color: rgba(255,179,64,0.3); }
+.ccard-sentiment-distressed{ border-color: rgba(255,77,106,0.35); }
+.ccard-sentiment-neutral   { border-color: var(--border2); }
+
+.sentiment-main { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.s-emoji { font-size: 2rem; line-height: 1; }
+.s-right { flex: 1; }
+.s-label { font-size: 0.65rem; font-family: var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text2); }
+.s-value { font-size: 1.1rem; font-weight: 800; line-height: 1.1; }
+.s-reason { font-size: 0.7rem; color: var(--text2); margin-top: 2px; line-height: 1.4; }
+.s-score { font-size: 1.4rem; font-weight: 900; font-family: var(--f-mono); }
+
+.s-bar-wrap { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+.s-bar { height: 100%; border-radius: 2px; transition: width 0.6s cubic-bezier(.34,1.56,.64,1); }
+
+.s-row { display: flex; justify-content: space-between; margin-top: 7px; }
+.s-tag { font-size: 0.6rem; font-family: var(--f-mono); color: var(--text2); }
+
+/* UNDERSTAND CARD */
+.ccard-understand { border-color: rgba(77,166,255,0.2); background: rgba(77,166,255,0.03); }
+.understand-en { font-size: 0.85rem; line-height: 1.55; color: var(--text0); }
+.understand-hi { font-family: var(--f-hindi); font-size: 0.9rem; color: #7eb8ff; margin-top: 6px; }
+.understand-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+.u-tag {
+  font-size: 0.58rem; font-family: var(--f-mono); padding: 2px 7px;
+  border-radius: 4px; letter-spacing: 0.08em;
+}
+.u-dept { background: rgba(77,166,255,0.1); color: var(--blue); border: 1px solid rgba(77,166,255,0.25); }
+.u-cat  { background: rgba(0,229,180,0.07); color: var(--teal); border: 1px solid var(--teal3); }
+.u-sla  { background: rgba(255,179,64,0.08); color: var(--amber); border: 1px solid rgba(255,179,64,0.25); }
+
+/* VERIFY CARD */
+.ccard-verify { border-color: rgba(0,229,180,0.2); background: rgba(0,229,180,0.03); }
+.verify-q { font-size: 0.85rem; line-height: 1.55; color: var(--text0); margin-bottom: 10px; }
+.verify-actions { display: flex; gap: 6px; }
+.btn-v {
+  flex: 1; border-radius: 6px; padding: 6px; cursor: pointer;
+  font-size: 0.72rem; font-family: var(--f-display); font-weight: 700;
+  border: 1px solid; transition: all 0.15s;
+}
+.btn-v-yes { color: var(--green); border-color: rgba(45,245,160,0.35); background: rgba(45,245,160,0.07); }
+.btn-v-yes:hover { background: rgba(45,245,160,0.15); }
+.btn-v-no  { color: var(--text2); border-color: var(--border2); background: transparent; }
+.btn-v-no:hover  { color: var(--amber); border-color: rgba(255,179,64,0.3); }
+.verify-done { font-size: 0.72rem; color: var(--green); font-family: var(--f-mono); display: flex; align-items: center; gap: 5px; }
+
+/* SUGGESTED RESPONSE CARD */
+.ccard-response { border-color: rgba(0,229,180,0.12); background: var(--bg2); border-style: dashed; }
+.response-q { font-size: 0.83rem; line-height: 1.55; color: #8af5d5; font-style: italic; }
+.btn-use {
+  margin-top: 8px; border-radius: 6px; padding: 5px 12px;
+  font-size: 0.7rem; font-family: var(--f-display); font-weight: 700;
+  color: var(--teal); border: 1px solid var(--teal3);
+  background: rgba(0,229,180,0.05); cursor: pointer; transition: all 0.15s;
+}
+.btn-use:hover { background: rgba(0,229,180,0.12); }
+
+/* TICKET CARD */
+.ccard-ticket { border-color: var(--border2); background: var(--bg2); }
+.ticket-row { display: flex; gap: 6px; margin-bottom: 5px; align-items: flex-start; font-size: 0.78rem; }
+.t-key { color: var(--text2); font-family: var(--f-mono); font-size: 0.65rem; min-width: 72px; padding-top: 1px; letter-spacing: 0.05em; }
+.t-val { color: var(--text0); flex: 1; }
+.t-val-hi { color: var(--red); font-weight: 700; }
+.t-val-md { color: var(--amber); font-weight: 700; }
+.t-val-lo { color: var(--green); font-weight: 700; }
+.ticket-actions { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
+.t-action { font-size: 0.72rem; color: var(--text1); display: flex; gap: 5px; }
+.t-action::before { content: '›'; color: var(--teal); flex-shrink: 0; }
+
+.btn-create-ticket {
+  width: 100%; margin-top: 10px; background: var(--teal); color: var(--bg0);
+  border: none; border-radius: 8px; padding: 8px;
+  font-family: var(--f-display); font-size: 0.78rem; font-weight: 800;
+  cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em;
+}
+.btn-create-ticket:hover { background: var(--teal2); box-shadow: var(--shadow-teal); }
+.btn-create-ticket:disabled { opacity: 0.3; cursor: not-allowed; }
+.ticket-created { font-size: 0.72rem; color: var(--green); text-align: center; font-family: var(--f-mono); padding: 5px; }
+
+/* ANALYTICS MINI CARD */
+.ccard-analytics { border-color: var(--border2); background: var(--bg2); }
+.analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.a-metric { background: var(--bg3); border-radius: 7px; padding: 8px; text-align: center; }
+.a-val { font-size: 1.2rem; font-weight: 900; font-family: var(--f-mono); color: var(--teal); }
+.a-label { font-size: 0.6rem; color: var(--text2); margin-top: 2px; }
+
+/* empty copilot */
+.copilot-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 2rem; text-align: center; opacity: 0.35; gap: 10px;
+}
+.copilot-empty-icon { font-size: 2.5rem; }
+.copilot-empty-text { font-size: 0.8rem; color: var(--text2); line-height: 1.6; }
+
+/* analyzing spinner */
+.analyzing {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px;
+  padding: 2rem;
+}
+.spin-ring {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 2px solid rgba(0,229,180,0.15);
+  border-top-color: var(--teal);
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.analyzing-text { font-size: 0.75rem; color: var(--text2); font-family: var(--f-mono); letter-spacing: 0.08em; }
+
+/* ══════════════════════════════════
+   BOTTOM STATUSBAR
+══════════════════════════════════ */
+.statusbar {
+  height: 24px; flex-shrink: 0;
+  background: rgba(5,12,24,0.99);
+  border-top: 1px solid var(--border2);
+  display: flex; align-items: center;
+  padding: 0 1rem; gap: 1rem;
+  position: relative; z-index: 10;
+}
+.sb-item {
+  font-size: 0.6rem; font-family: var(--f-mono);
+  color: var(--text3); letter-spacing: 0.08em;
+  display: flex; align-items: center; gap: 4px;
+}
+.sb-item span { color: var(--text2); }
+.sb-sep { width: 1px; height: 12px; background: var(--border2); }
+.sb-right { margin-left: auto; }
+.sb-live { color: var(--teal); animation: pulse-status 2s infinite; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+/* ─── SCENARIOS ─── */
+const SCENARIOS = [
+  {
+    id: 1, lang: "Hindi", langCode: "HI", flag: "🇮🇳",
+    caller: "Ramesh Kumar", location: "Bellary", phone: "+91 94481 XXXXX",
+    initial: "Mera ration card band kar diya hai. Teen mahine se koi response nahi. Mere paas khaana nahi hai. Please kuch karo.",
+    hindi: "मेरा राशन कार्ड बंद कर दिया है। तीन महीने से कोई response नहीं। मेरे पास खाना नहीं है। प्लीज़ कुछ करो।",
+    translation: "My ration card has been blocked. No response for three months. I have no food. Please do something.",
+    issue: "Ration card blocked", dept: "Food & Civil Supplies Dept.",
+    priority: "high", sentiment: "distressed", score: 88,
+    sentimentReason: "High distress — food insecurity language detected",
+    verifyQ: "क्या मैं सही समझा? आपका राशन कार्ड पिछले तीन महीनों से बंद है और आपको कोई जवाब नहीं मिला है?",
+    suggestedReply: "Ramesh ji, main aapki baat samajh gaya hoon. Aapka ration card issue main abhi Food & Civil Supplies department ko forward kar raha hoon. Aapko 48 ghante mein call aayegi. Kripaya apna ration card number batayein.",
+    actions: ["Escalate to Food & Civil Supplies urgent queue", "Create high-priority ticket", "Schedule follow-up call within 24hr"],
+    sla: "2", category: "Food Security",
+  },
+  {
+    id: 2, lang: "Kannada", langCode: "KN", flag: "🇮🇳",
+    caller: "Savitha Devi", location: "Mysuru", phone: "+91 98441 XXXXX",
+    initial: "Namma mane munde road kaade maadiddare, naavu hodhoke drusta illa. Ambulance kuda baruthe illa. Yaru kelthare?",
+    hindi: null,
+    translation: "They have dug up the road in front of my house. We cannot go anywhere. Even the ambulance cannot reach. Who do I contact?",
+    issue: "Road dug up, access blocked", dept: "BBMP / Public Works Dept.",
+    priority: "medium", sentiment: "confused", score: 58,
+    sentimentReason: "Confused and frustrated — seeks departmental clarity",
+    verifyQ: "Namma mane munde road kaade maadi access block aagide, ambulance kuda bartilla — idu sari antha arthaavittha?",
+    suggestedReply: "Savitha ji, nimage BBMP road maintenance department ge connect maaduthene. Nimma address confirm maadi, 72 ghante olage road restore maaduthare.",
+    actions: ["Route to BBMP Complaint Cell", "Flag as potential medical emergency risk", "Request site inspection"],
+    sla: "3", category: "Infrastructure / Road",
+  },
+  {
+    id: 3, lang: "English", langCode: "EN", flag: "🇮🇳",
+    caller: "Mohammed Irfan", location: "Bengaluru", phone: "+91 96321 XXXXX",
+    initial: "Hello, I want to check status of my Ayushman Bharat card application. I applied 3 months ago and submitted all documents. Got no update.",
+    hindi: null, translation: null,
+    issue: "Ayushman card application pending", dept: "Health & Family Welfare Dept.",
+    priority: "low", sentiment: "neutral", score: 32,
+    sentimentReason: "Calm tone — informational inquiry, low urgency",
+    verifyQ: "Am I correct that you applied for Ayushman Bharat card 3 months ago with complete documents, and have received no update on its status?",
+    suggestedReply: "Thank you Mr. Irfan. I'll check your application status right now. Could you please share your application reference number or registered mobile number?",
+    actions: ["Query Ayushman Bharat portal", "Check document verification status", "Send SMS update to citizen"],
+    sla: "7", category: "Health Scheme",
+  },
+  {
+    id: 4, lang: "Hinglish", langCode: "HE", flag: "🇮🇳",
+    caller: "Priya Sharma", location: "Hubli", phone: "+91 90085 XXXXX",
+    initial: "Meri pension last do mahine se nahi aayi. Already office gaye the, unhone bola system mein error hai. Mujhe apne medicine kharidne hai.",
+    hindi: "मेरी पेंशन पिछले दो महीने से नहीं आई। पहले ऑफिस गए थे, उन्होंने बोला सिस्टम में error है। मुझे अपनी medicine खरीदनी है।",
+    translation: "My pension has not come for two months. Already visited the office, they said system error. I need to buy my medicines.",
+    issue: "Pension payment delayed 2 months", dept: "Social Welfare / Treasury",
+    priority: "high", sentiment: "confused", score: 71,
+    sentimentReason: "Distress escalating — medical need linked to financial denial",
+    verifyQ: "Kya main sahi samjha? Aapki pension 2 mahine se band hai, office mein system error bata rahe hain, aur aapko urgent medicines khareedni hain?",
+    suggestedReply: "Priya ji, main aapki pareshani samajhta hoon. Main abhi Social Welfare aur Treasury dono ko flag kar raha hoon. Aapka reference number dein — 24 ghante mein resolve hoga ya mujhe personally call karein.",
+    actions: ["Flag pension ledger for manual review", "Escalate to Treasury urgent desk", "Document medical urgency in ticket"],
+    sla: "1", category: "Pension / Social Welfare",
+  },
+];
+
+const SENT_CFG = {
+  calm:       { emoji:"😊", label:"Calm",       color:"var(--green)",  bar:"#2df5a0", cls:"ccard-sentiment-calm",       hdr:"rgba(45,245,160,0.15)"  },
+  confused:   { emoji:"😕", label:"Confused",    color:"var(--amber)",  bar:"#ffb340", cls:"ccard-sentiment-confused",   hdr:"rgba(255,179,64,0.12)"  },
+  distressed: { emoji:"😰", label:"Distressed",  color:"var(--red)",    bar:"#ff4d6a", cls:"ccard-sentiment-distressed", hdr:"rgba(255,77,106,0.12)"  },
+  neutral:    { emoji:"😐", label:"Neutral",      color:"var(--text1)", bar:"#6a8aaa", cls:"ccard-sentiment-neutral",    hdr:"rgba(255,255,255,0.04)" },
+};
+const PRIO_CFG = {
+  high:   { label:"🔴 HIGH",   cls:"t-val-hi" },
+  medium: { label:"🟡 MEDIUM", cls:"t-val-md" },
+  low:    { label:"🟢 LOW",    cls:"t-val-lo" },
+};
+
+const LOG_SEED = [
+  { id:"C-0041", caller:"Anjali M.", issue:"Water supply cut", sentiment:"distressed", lang:"KN", resolved:true, time:"09:14", dept:"BWSSB" },
+  { id:"C-0042", caller:"Vikram Rao", issue:"Property tax receipt", sentiment:"neutral", lang:"EN", resolved:true, time:"09:31", dept:"BBMP" },
+  { id:"C-0043", caller:"Fatima B.", issue:"Scholarship delay", sentiment:"confused", lang:"HI", resolved:false, time:"09:58", dept:"Education" },
+  { id:"C-0044", caller:"Suresh K.", issue:"BESCOM bill dispute", sentiment:"confused", lang:"KN", resolved:true, time:"10:22", dept:"BESCOM" },
+  { id:"C-0045", caller:"Meena T.", issue:"Birth certificate", sentiment:"neutral", lang:"HE", resolved:true, time:"10:47", dept:"Civil Reg." },
+];
+
+/* ─── WAVE BARS ─── */
+function WaveViz({ active }) {
+  const [heights, setHeights] = useState(() => Array(40).fill(6));
+  useEffect(() => {
+    if (!active) { setHeights(Array(40).fill(6)); return; }
+    const id = setInterval(() => {
+      setHeights(prev => prev.map((_, i) => {
+        const center = 20;
+        const dist = Math.abs(i - center) / center;
+        const max = (1 - dist * 0.6) * 24;
+        return 4 + Math.random() * max;
+      }));
+    }, 100);
+    return () => clearInterval(id);
+  }, [active]);
+
+  return (
+    <div className="waveform">
+      {heights.map((h, i) => (
+        <div key={i} className={`wave-bar${active ? " active" : ""}`} style={{ height: h + "px" }} />
+      ))}
+      <div className="waveform-label">
+        {active ? (
+          <><span style={{color:"var(--red)"}}>●</span> LIVE</>
+        ) : (
+          <><span>◎</span> STANDBY</>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── SENTIMENT CARD ─── */
+function SentimentCard({ data }) {
+  const cfg = SENT_CFG[data.sentiment] || SENT_CFG.neutral;
+  return (
+    <div className={`ccard ccard-sentiment ${cfg.cls}`}>
+      <div className="ccard-header" style={{ background: cfg.hdr }}>
+        <span className="ccard-label" style={{ color: cfg.color }}>Emotional State</span>
+        <span style={{ fontSize:"0.62rem", fontFamily:"var(--f-mono)", color:"var(--text2)" }}>{data.languageDetected || data.lang}</span>
+      </div>
+      <div className="ccard-body">
+        <div className="sentiment-main">
+          <div className="s-emoji">{cfg.emoji}</div>
+          <div className="s-right">
+            <div className="s-label">Detected Mood</div>
+            <div className="s-value" style={{ color: cfg.color }}>{cfg.label}</div>
+            <div className="s-reason">{data.sentimentReason}</div>
+          </div>
+          <div className="s-score" style={{ color: cfg.color }}>{data.score || data.sentimentScore}%</div>
+        </div>
+        <div className="s-bar-wrap">
+          <div className="s-bar" style={{ width: (data.score||data.sentimentScore) + "%", background: cfg.bar }} />
+        </div>
+        <div className="s-row">
+          <span className="s-tag">Priority: <span style={{color: data.priority==="high"?"var(--red)":data.priority==="medium"?"var(--amber)":"var(--green)"}}>{(data.priority||"low").toUpperCase()}</span></span>
+          <span className="s-tag">Lang: {data.languageDetected || data.lang}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── UNDERSTAND CARD ─── */
+function UnderstandCard({ data }) {
+  return (
+    <div className="ccard ccard-understand">
+      <div className="ccard-header" style={{ background:"rgba(77,166,255,0.06)" }}>
+        <span className="ccard-label" style={{ color:"var(--blue)" }}>🧠 AI Understanding</span>
+      </div>
+      <div className="ccard-body">
+        <div className="understand-en">{data.understoodIssue || data.issue}</div>
+        {(data.understoodIssueHindi || data.hindi) && (
+          <div className="understand-hi">{data.understoodIssueHindi || data.hindi}</div>
+        )}
+        <div className="understand-tags">
+          <span className="u-tag u-dept">{data.department || data.dept}</span>
+          <span className="u-tag u-cat">{data.ticketCategory || data.category}</span>
+          <span className="u-tag u-sla">SLA: {data.estimatedResolutionDays || data.sla}d</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── VERIFY CARD ─── */
+function VerifyCard({ data, onUse }) {
+  const [status, setStatus] = useState(null);
+  useEffect(() => setStatus(null), [data]);
+  const q = data.verificationQuestion || data.verifyQ;
+  return (
+    <div className="ccard ccard-verify">
+      <div className="ccard-header" style={{ background:"rgba(0,229,180,0.05)" }}>
+        <span className="ccard-label" style={{ color:"var(--teal)" }}>✅ Verification Prompt</span>
+        <span style={{fontSize:"0.58rem",fontFamily:"var(--f-mono)",color:"var(--text3)"}}>read aloud to citizen</span>
+      </div>
+      <div className="ccard-body">
+        <div className="verify-q">{q}</div>
+        {status === null && (
+          <div className="verify-actions">
+            <button className="btn-v btn-v-yes" onClick={() => { setStatus("yes"); onUse(q); }}>👍 Use this</button>
+            <button className="btn-v btn-v-no"  onClick={() => setStatus("no")}>✏ Rephrase</button>
+          </div>
+        )}
+        {status === "yes" && <div className="verify-done">✓ Sent to citizen feed</div>}
+        {status === "no"  && <div style={{fontSize:"0.7rem",color:"var(--amber)",fontFamily:"var(--f-mono)"}}>← Modify in input box</div>}
+      </div>
+    </div>
+  );
+}
+
+/* ─── RESPONSE CARD ─── */
+function ResponseCard({ data, onUse }) {
+  const r = data.suggestedResponse || data.suggestedReply;
+  return (
+    <div className="ccard ccard-response">
+      <div className="ccard-header">
+        <span className="ccard-label" style={{ color:"var(--teal)" }}>💬 Suggested Response</span>
+      </div>
+      <div className="ccard-body">
+        <div className="response-q">"{r}"</div>
+        <button className="btn-use" onClick={() => onUse(r)}>Use as agent reply ↵</button>
+      </div>
+    </div>
+  );
+}
+
+/* ─── TICKET CARD ─── */
+function TicketCard({ data }) {
+  const [created, setCreated] = useState(false);
+  useEffect(() => setCreated(false), [data]);
+  const prio = PRIO_CFG[data.priority] || PRIO_CFG.low;
+  const actions = data.actionItems || data.actions || [];
+  const ticketId = useMemo(() => "TKT-" + Math.floor(Math.random()*90000+10000), [data]);
+  return (
+    <div className="ccard ccard-ticket">
+      <div className="ccard-header">
+        <span className="ccard-label" style={{ color:"var(--text2)" }}>🎫 Auto-Ticket Draft</span>
+        <span style={{fontSize:"0.58rem",fontFamily:"var(--f-mono)",color:"var(--text3)"}}>{ticketId}</span>
+      </div>
+      <div className="ccard-body">
+        <div className="ticket-row"><span className="t-key">DEPT</span><span className="t-val">{data.department || data.dept}</span></div>
+        <div className="ticket-row"><span className="t-key">CATEGORY</span><span className="t-val">{data.ticketCategory || data.category}</span></div>
+        <div className="ticket-row"><span className="t-key">PRIORITY</span><span className={`t-val ${prio.cls}`}>{prio.label}</span></div>
+        <div className="ticket-row"><span className="t-key">SLA TARGET</span><span className="t-val">{data.estimatedResolutionDays || data.sla} working days</span></div>
+        <div className="ticket-row" style={{flexDirection:"column",gap:3}}>
+          <span className="t-key">ACTION ITEMS</span>
+          <div className="ticket-actions">
+            {actions.map((a,i) => <div key={i} className="t-action">{a}</div>)}
+          </div>
+        </div>
+        {!created
+          ? <button className="btn-create-ticket" onClick={() => setCreated(true)}>Create & Submit Ticket →</button>
+          : <div className="ticket-created">✓ Ticket {ticketId} submitted to {data.department || data.dept}</div>
+        }
+      </div>
+    </div>
+  );
+}
+
+/* ─── ANALYTICS CARD ─── */
+function AnalyticsCard({ callLog }) {
+  const total = callLog.length;
+  const resolved = callLog.filter(c=>c.resolved).length;
+  const distressed = callLog.filter(c=>c.sentiment==="distressed").length;
+  const avgTime = "6.4";
+  return (
+    <div className="ccard ccard-analytics">
+      <div className="ccard-header">
+        <span className="ccard-label" style={{ color:"var(--text2)" }}>📊 Session Stats</span>
+      </div>
+      <div className="ccard-body">
+        <div className="analytics-grid">
+          <div className="a-metric"><div className="a-val">{total}</div><div className="a-label">Total Calls</div></div>
+          <div className="a-metric"><div className="a-val" style={{color:"var(--green)"}}>{resolved}</div><div className="a-label">Resolved</div></div>
+          <div className="a-metric"><div className="a-val" style={{color:"var(--red)"}}>{distressed}</div><div className="a-label">Distress Flags</div></div>
+          <div className="a-metric"><div className="a-val" style={{color:"var(--amber)"}}>{avgTime}m</div><div className="a-label">Avg Handle Time</div></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════
+   MAIN APP
+═══════════════════════════ */
+function App() {
+  const [apiKey, setApiKey]           = useState(() => localStorage.getItem("samjho_k2") || "");
+  const [apiInput, setApiInput]       = useState("");
+  const [messages, setMessages]       = useState([]);
+  const [inputVal, setInputVal]       = useState("");
+  const [loading, setLoading]         = useState(false);
+  const [listening, setListening]     = useState(false);
+  const [activeScenario, setActive]   = useState(null);
+  const [copilotData, setCopilot]     = useState(null);
+  const [callLog, setCallLog]         = useState(LOG_SEED);
+  const [callActive, setCallActive]   = useState(false);
+  const [elapsed, setElapsed]         = useState(0);
+  const [verifyDone, setVerifyDone]   = useState(false);
+  const [waveActive, setWaveActive]   = useState(false);
+
+  const feedRef  = useRef(null);
+  const recogRef = useRef(null);
+  const timerRef = useRef(null);
+  const callCnt  = useRef(LOG_SEED.length);
+
+  /* auto-scroll */
+  useEffect(() => {
+    if (feedRef.current) feedRef.current.scrollTop = feedRef.current.scrollHeight;
+  }, [messages, loading]);
+
+  /* timer */
+  useEffect(() => {
+    if (callActive) { timerRef.current = setInterval(() => setElapsed(e => e+1), 1000); }
+    else            { clearInterval(timerRef.current); }
+    return () => clearInterval(timerRef.current);
+  }, [callActive]);
+
+  const fmt = s => `${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
+
+  /* ─── SPEECH ─── */
+  const startMic = useCallback(() => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { alert("Speech recognition requires Chrome browser."); return; }
+    const r = new SR();
+    r.lang = "hi-IN"; r.interimResults = true;
+    r.onresult = e => setInputVal(Array.from(e.results).map(x=>x[0].transcript).join(""));
+    r.onerror = r.onend = () => { setListening(false); setWaveActive(false); };
+    recogRef.current = r; r.start();
+    setListening(true); setWaveActive(true);
+  }, []);
+
+  const stopMic = useCallback(() => {
+    recogRef.current?.stop();
+    setListening(false); setWaveActive(false);
+  }, []);
+
+  /* ─── LOAD SCENARIO ─── */
+  const loadScenario = (sc) => {
+    setActive(sc); setMessages([]); setCopilot(null);
+    setCallActive(true); setElapsed(0); setVerifyDone(false);
+    setWaveActive(true);
+    const msg = {
+      id: Date.now(), role: "citizen",
+      text: sc.initial, hindi: sc.hindi, translation: sc.translation,
+      lang: sc.lang, time: now(),
+    };
+    setMessages([msg]);
+    if (apiKey) analyzeWithClaude([msg], sc);
+    else        useDemoData(sc);
+    setTimeout(() => setWaveActive(false), 3000);
+  };
+
+  const useDemoData = (sc) => {
+    setLoading(true);
+    setTimeout(() => {
+      setCopilot({
+        sentiment: sc.sentiment, score: sc.score,
+        sentimentReason: sc.sentimentReason,
+        understoodIssue: sc.issue, understoodIssueHindi: sc.hindi ? "समस्या की पहचान की गई" : null,
+        verificationQuestion: sc.verifyQ,
+        department: sc.dept, priority: sc.priority,
+        suggestedResponse: sc.suggestedReply,
+        actionItems: sc.actions,
+        ticketCategory: sc.category,
+        estimatedResolutionDays: sc.sla,
+        languageDetected: sc.lang,
+      });
+      setLoading(false);
+    }, 1200);
+  };
+
+  /* ─── CLAUDE API ─── */
+  const analyzeWithClaude = async (msgs, sc) => {
+    setLoading(true);
+    const transcript = msgs.map(m => `${m.role==="citizen"?"CITIZEN":"AGENT"}: ${m.text}`).join("\n");
+    const prompt = `You are SamjhoAI, real-time AI co-pilot for the Indian government 1092 citizen helpline.
+Analyze this call transcript. Respond ONLY with valid JSON (no markdown):
+
+TRANSCRIPT:
+${transcript}
+${sc ? `Context: Caller is ${sc.caller} from ${sc.location}, calling in ${sc.lang}.` : ""}
+
+Return exactly:
+{
+  "sentiment": "calm|confused|distressed|neutral",
+  "sentimentScore": 0-100,
+  "sentimentReason": "one sentence",
+  "understoodIssue": "plain English summary",
+  "understoodIssueHindi": "Hindi Devanagari or null",
+  "verificationQuestion": "confirmation in citizen language",
+  "department": "government department name",
+  "priority": "high|medium|low",
+  "suggestedResponse": "agent reply in citizen language",
+  "actionItems": ["action1","action2","action3"],
+  "ticketCategory": "category",
+  "estimatedResolutionDays": "number as string",
+  "languageDetected": "language name"
+}`;
+    try {
+      const res  = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:1000, messages:[{role:"user",content:prompt}] })
+      });
+      const data = await res.json();
+      const raw  = (data.content||[]).filter(c=>c.type==="text").map(c=>c.text).join("");
+      const json = JSON.parse(raw.replace(/```json|```/g,"").trim());
+      setCopilot(json);
+    } catch {
+      if (sc) useDemoData(sc);
+      else setCopilot(null);
+    }
+    setLoading(false);
+  };
+
+  /* ─── SEND MESSAGE ─── */
+  const sendMsg = async () => {
+    if (!inputVal.trim()) return;
+    const msg = { id:Date.now(), role:"citizen", text:inputVal, lang:activeScenario?.lang||"Unknown", time:now() };
+    const next = [...messages, msg];
+    setMessages(next); setInputVal("");
+    setWaveActive(true);
+    setTimeout(() => setWaveActive(false), 2000);
+    if (apiKey) analyzeWithClaude(next, activeScenario);
+    else if (activeScenario) useDemoData(activeScenario);
+  };
+
+  /* ─── AGENT REPLY ─── */
+  const agentReply = (text) => {
+    setMessages(prev => [...prev, { id:Date.now(), role:"agent", text, time:now() }]);
+  };
+
+  /* ─── END CALL ─── */
+  const endCall = () => {
+    setCallActive(false); setWaveActive(false);
+    if (activeScenario) {
+      callCnt.current++;
+      setCallLog(prev => [{
+        id: `C-00${callCnt.current+40}`, caller: activeScenario.caller,
+        issue: activeScenario.issue, sentiment: copilotData?.sentiment||activeScenario.sentiment,
+        lang: activeScenario.langCode, resolved: true, dept: activeScenario.dept,
+        time: now(),
+      }, ...prev]);
+    }
+  };
+
+  const newCall = () => {
+    setMessages([]); setCopilot(null); setActive(null);
+    setCallActive(false); setElapsed(0); setInputVal("");
+  };
+
+  const saveKey = () => { localStorage.setItem("samjho_k2", apiInput); setApiKey(apiInput); setApiInput(""); };
+  const now = () => new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"});
+  const hasCopilot = copilotData && !loading;
+
+  return (
+    <>
+      {/* ── TOPBAR ── */}
+      <div className="topbar">
+        <div className="logo">
+          <div className="logo-mark">🎧</div>
+          <div className="logo-text">Samjho<span>AI</span></div>
+        </div>
+        <div className="topbar-sep"/>
+        <div className="topbar-status"><div className="status-dot"/>SYSTEM OPERATIONAL</div>
+        <div className="topbar-sep"/>
+        <span className="topbar-chip chip-teal">Karnataka 1092</span>
+        <span className="topbar-chip chip-blue">AI for Bharat</span>
+
+        <div className="topbar-right">
+          {!apiKey ? (
+            <div className="api-zone">
+              <input className="api-input" type="password" placeholder="Anthropic API key (optional)…"
+                value={apiInput} onChange={e=>setApiInput(e.target.value)}
+                onKeyDown={e=>e.key==="Enter"&&saveKey()} />
+              <button className="btn-api" onClick={saveKey}>Connect AI</button>
+            </div>
+          ) : (
+            <div className="api-active-badge" onClick={()=>{localStorage.removeItem("samjho_k2");setApiKey("");}}>
+              <span style={{color:"var(--green)"}}>●</span> Claude AI Active
+            </div>
+          )}
+          <span className="topbar-chip chip-amber">DEMO MODE</span>
+        </div>
+      </div>
+
+      {/* ── WORKSPACE ── */}
+      <div className="workspace">
+
+        {/* ── LEFT SIDEBAR ── */}
+        <div className="sidebar">
+          <div className="sidebar-section">
+            <div className="sidebar-header">
+              Scenarios
+              <span className="sidebar-count">{SCENARIOS.length}</span>
+            </div>
+            <div className="scenario-list">
+              {SCENARIOS.map(sc => {
+                const cfg = SENT_CFG[sc.sentiment]||SENT_CFG.neutral;
+                return (
+                  <div key={sc.id} className={`scenario-card${activeScenario?.id===sc.id?" active":""}`}
+                    onClick={() => loadScenario(sc)}>
+                    <div className="sc-lang">{sc.flag} {sc.lang}</div>
+                    <div className="sc-name">{sc.caller}</div>
+                    <div className="sc-issue">{sc.issue}</div>
+                    <div className="sc-sent" style={{color:cfg.color}}>{cfg.emoji} {cfg.label}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="sidebar-header">
+            Call Log
+            <span className="sidebar-count">{callLog.length}</span>
+          </div>
+          <div className="call-log">
+            {callLog.map((c, i) => {
+              const cfg = SENT_CFG[c.sentiment]||SENT_CFG.neutral;
+              return (
+                <div key={i} className="log-item">
+                  <div className="log-item-top">
+                    <span className="log-id">{c.id}</span>
+                    <span className="log-time">{c.time}</span>
+                  </div>
+                  <div className="log-caller">{c.caller}</div>
+                  <div className="log-issue-text">{c.issue}</div>
+                  <div className="log-tags">
+                    <span className={`log-tag ${cfg.cls?.includes("calm")?"lt-green":cfg.cls?.includes("confused")?"lt-amber":"lt-red"}`}>{cfg.emoji}</span>
+                    <span className="log-tag lt-blue">{c.lang}</span>
+                    <span className="log-tag lt-gray">{c.dept}</span>
+                    <span className={`log-tag ${c.resolved?"lt-green":"lt-amber"}`}>{c.resolved?"✓ done":"⏳ open"}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── CENTER CALL FEED ── */}
+        <div className="call-center">
+          {/* call header */}
+          <div className="call-header">
+            <div className={`caller-avatar${callActive?" active":""}`}>
+              {activeScenario ? activeScenario.flag : "📞"}
+            </div>
+            {activeScenario ? (
+              <div className="caller-info">
+                <div className="caller-name-row">
+                  <span className="caller-name">{activeScenario.caller}</span>
+                  <span className="caller-lang-tag">{activeScenario.langCode}</span>
+                </div>
+                <div className="caller-sub">{activeScenario.location} · {activeScenario.phone}</div>
+              </div>
+            ) : (
+              <div className="caller-info">
+                <div className="caller-name" style={{color:"var(--text2)"}}>No active call</div>
+                <div className="caller-sub">Select a scenario from the left panel</div>
+              </div>
+            )}
+            <div className="call-controls">
+              {callActive && <div className={`timer${callActive?" pulse":""}`}>🔴 {fmt(elapsed)}</div>}
+              {callActive && <button className="btn-ctrl btn-end" onClick={endCall}>End Call</button>}
+              <button className="btn-ctrl btn-new" onClick={newCall} disabled={!activeScenario && messages.length===0}>
+                + New Call
+              </button>
+            </div>
+          </div>
+
+          {/* waveform */}
+          <WaveViz active={waveActive} />
+
+          {/* transcript */}
+          <div className="transcript-feed" ref={feedRef}>
+            {messages.length === 0 && (
+              <div className="empty-feed">
+                <div className="empty-icon">📞</div>
+                <div className="empty-label">Select a scenario to begin a simulated call<br/>or type a citizen message below</div>
+                <div className="empty-hint">4 languages · real-time AI · auto-ticket generation</div>
+              </div>
+            )}
+
+            {messages.map(m => (
+              <div key={m.id} className={`msg-row ${m.role}`}>
+                <div className={`msg-avatar-sm ${m.role==="citizen"?"avatar-citizen":m.role==="agent"?"avatar-agent":"avatar-system"}`}>
+                  {m.role==="citizen"?"👤":m.role==="agent"?"🎧":"🤖"}
+                </div>
+                <div className="msg-body">
+                  <div className={`bubble bubble-${m.role}`}>
+                    <div>{m.text}</div>
+                    {m.hindi && <div className="bubble-hindi">{m.hindi}</div>}
+                    {m.translation && <div className="bubble-tr">"{m.translation}"</div>}
+                  </div>
+                  <div className="msg-meta">
+                    {m.role==="citizen"?"Citizen":m.role==="agent"?"Agent":"System"} · {m.time}
+                    {m.lang && <span style={{marginLeft:5,fontFamily:"var(--f-mono)",fontSize:"0.58rem",color:"var(--blue)"}}>
+                      [{m.lang}]
+                    </span>}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {loading && (
+              <div className="typing-row">
+                <div className="msg-avatar-sm avatar-system" style={{fontSize:11}}>🤖</div>
+                <div className="typing-dots">
+                  <div className="typing-dot"/><div className="typing-dot"/><div className="typing-dot"/>
+                </div>
+                <span className="typing-label">SamjhoAI analyzing…</span>
+              </div>
+            )}
+          </div>
+
+          {/* input */}
+          <div className="input-zone">
+            <div className="input-inner">
+              <button className={`btn-mic${listening?" listening":""}`}
+                onClick={listening?stopMic:startMic} title="Click to speak">
+                {listening?"⏹":"🎤"}
+              </button>
+              <textarea className="input-ta" rows={1}
+                placeholder="Type citizen's message here (any language)…"
+                value={inputVal} onChange={e=>setInputVal(e.target.value)}
+                onKeyDown={e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMsg();} }}
+              />
+              <button className="btn-send" onClick={sendMsg} disabled={!inputVal.trim()||loading}>
+                Send ↵
+              </button>
+            </div>
+            <div className="input-hint">Enter to send · Shift+Enter for new line · 🎤 for voice input</div>
+          </div>
+        </div>
+
+        {/* ── RIGHT COPILOT ── */}
+        <div className="copilot">
+          <div className="copilot-header">
+            <span className="copilot-icon">🧠</span>
+            <span className="copilot-title">AI CO-PILOT</span>
+            <span className="copilot-badge">SamjhoAI</span>
+          </div>
+
+          <div className="copilot-scroll">
+            {!hasCopilot && !loading && (
+              <div className="copilot-empty">
+                <div className="copilot-empty-icon">⚡</div>
+                <div className="copilot-empty-text">
+                  Real-time AI analysis will appear here as the citizen speaks.<br/><br/>
+                  Click a scenario on the left to start.
+                </div>
+              </div>
+            )}
+
+            {loading && !hasCopilot && (
+              <div className="analyzing">
+                <div className="spin-ring"/>
+                <div className="analyzing-text">Analyzing language & intent…</div>
+              </div>
+            )}
+
+            {hasCopilot && (
+              <>
+                <SentimentCard data={copilotData} />
+                <UnderstandCard data={copilotData} />
+                <VerifyCard data={copilotData} onUse={agentReply} />
+                <ResponseCard data={copilotData} onUse={agentReply} />
+                <TicketCard data={copilotData} />
+                <AnalyticsCard callLog={callLog} />
+              </>
+            )}
+          </div>
+        </div>
+
+      </div>
+
+      {/* ── STATUSBAR ── */}
+      <div className="statusbar">
+        <div className="sb-item"><span className="sb-live">●</span> SYSTEM LIVE</div>
+        <div className="sb-sep"/>
+        <div className="sb-item">CALLS TODAY <span>{callLog.length + (callActive?1:0)}</span></div>
+        <div className="sb-sep"/>
+        <div className="sb-item">RESOLVED <span>{callLog.filter(c=>c.resolved).length}</span></div>
+        <div className="sb-sep"/>
+        <div className="sb-item">AI ENGINE <span>{apiKey?"Claude claude-sonnet-4-20250514":"Demo Mode"}</span></div>
+        <div className="sb-sep"/>
+        <div className="sb-item">LANGUAGES <span>KN · HI · EN · TE · TA</span></div>
+        <div className="sb-item sb-right">SamjhoAI v1.0 · AI for Bharat 2026 · Theme 12</div>
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
